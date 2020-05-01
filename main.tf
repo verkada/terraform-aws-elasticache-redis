@@ -156,6 +156,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
 
   dimensions = {
     CacheClusterId = var.cluster_mode_enabled ?
+
     "${module.label.id}-000${floor(count.index / var.cluster_mode_replicas_per_node_group)}-00${count.index % var.cluster_mode_replicas_per_node_group}" : module.label.id
   }
 
