@@ -117,8 +117,13 @@ resource "aws_elasticache_replication_group" "default" {
 # CloudWatch Resources
 #
 resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
-  count               = var.enabled ? 1 : 0
-  alarm_name          = "${module.label.id}-cpu-utilization"
+  count = (
+    var.enabled && var.cluster_mode_enabled ?
+    var.cluster_mode_replicas_per_node_group * var.cluster_mode_num_node_groups : (var.enabled ? 1 : 0)
+  )
+  alarm_name = (var.cluster_mode_enabled
+    ? "${module.label.id}-000${floor(count.index / var.cluster_mode_replicas_per_node_group) + 1}-00${count.index % var.cluster_mode_replicas_per_node_group + 1}-cpu-utilization"
+  : "${module.label.id}-cpu-utilization")
   alarm_description   = "Redis cluster CPU utilization"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
@@ -130,7 +135,9 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
   threshold = var.alarm_cpu_threshold_percent
 
   dimensions = {
-    CacheClusterId =  "${module.label.id}-cpu-utilization"
+    CacheClusterId = (var.cluster_mode_enabled
+      ? "${module.label.id}-000${floor(count.index / var.cluster_mode_replicas_per_node_group) + 1}-00${count.index % var.cluster_mode_replicas_per_node_group + 1}"
+    : module.label.id)
   }
 
   alarm_actions = var.alarm_actions
@@ -141,9 +148,11 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
   count = (
     var.enabled && var.cluster_mode_enabled ?
-      var.cluster_mode_replicas_per_node_group * var.cluster_mode_num_node_groups : (var.enabled ? 1 : 0)
+    var.cluster_mode_replicas_per_node_group * var.cluster_mode_num_node_groups : (var.enabled ? 1 : 0)
   )
-  alarm_name          = "${module.label.id}-freeable-memory"
+  alarm_name          = (var.cluster_mode_enabled
+    ? "${module.label.id}-000${floor(count.index / var.cluster_mode_replicas_per_node_group) + 1}-00${count.index % var.cluster_mode_replicas_per_node_group + 1}-freeable-memory"
+  : "${module.label.id}-cpu-utilization")
   alarm_description   = "Redis cluster freeable memory"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
@@ -155,9 +164,9 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
   threshold = var.alarm_memory_threshold_bytes
 
   dimensions = {
-    CacheClusterId = var.cluster_mode_enabled ?
-
-    "${module.label.id}-000${floor(count.index / var.cluster_mode_replicas_per_node_group)}-00${count.index % var.cluster_mode_replicas_per_node_group}" : module.label.id
+    CacheClusterId = (var.cluster_mode_enabled ?
+      "${module.label.id}-000${floor(count.index / var.cluster_mode_replicas_per_node_group)}-00${count.index % var.cluster_mode_replicas_per_node_group}"
+    : module.label.id)
   }
 
   alarm_actions = var.alarm_actions
