@@ -1,3 +1,13 @@
+locals {
+  elasticache_subnet_group_name = var.elasticache_subnet_group_name != "" ? var.elasticache_subnet_group_name : join("", aws_elasticache_subnet_group.default.*.name)
+  nodes_list = var.cluster_mode_enabled ? flatten([
+    for i in range(var.cluster_mode_num_node_groups) : [
+      for k in range(var.cluster_mode_replicas_per_node_group) :
+      "${module.label.id}-000${i + 1}-00${j + 1}"
+    ]
+  ]) : [module.label.id]
+}
+
 module "label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.16.0"
   enabled    = var.enabled
@@ -50,10 +60,6 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
   cidr_blocks       = var.allowed_cidr_blocks
   security_group_id = join("", aws_security_group.default.*.id)
   type              = "ingress"
-}
-
-locals {
-  elasticache_subnet_group_name = var.elasticache_subnet_group_name != "" ? var.elasticache_subnet_group_name : join("", aws_elasticache_subnet_group.default.*.name)
 }
 
 resource "aws_elasticache_subnet_group" "default" {
@@ -117,13 +123,9 @@ resource "aws_elasticache_replication_group" "default" {
 # CloudWatch Resources
 #
 resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
-  count = (
-    var.enabled && var.cluster_mode_enabled ?
-    var.cluster_mode_replicas_per_node_group * var.cluster_mode_num_node_groups : (var.enabled ? 1 : 0)
-  )
-  alarm_name = (var.cluster_mode_enabled
-    ? "${module.label.id}-000${floor(count.index / var.cluster_mode_replicas_per_node_group) + 1}-00${count.index % var.cluster_mode_replicas_per_node_group + 1}-cpu-utilization"
-  : "${module.label.id}-cpu-utilization")
+  for_each = var.enabled ? local.nodes_list : []
+
+  alarm_name          = "${each.value}-cpu-utilization"
   alarm_description   = "Redis cluster CPU utilization"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
@@ -135,9 +137,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
   threshold = var.alarm_cpu_threshold_percent
 
   dimensions = {
-    CacheClusterId = (var.cluster_mode_enabled
-      ? "${module.label.id}-000${floor(count.index / var.cluster_mode_replicas_per_node_group) + 1}-00${count.index % var.cluster_mode_replicas_per_node_group + 1}"
-    : module.label.id)
+    CacheClusterId = each.value
   }
 
   alarm_actions = var.alarm_actions
@@ -146,13 +146,9 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
-  count = (
-    var.enabled && var.cluster_mode_enabled ?
-    var.cluster_mode_replicas_per_node_group * var.cluster_mode_num_node_groups : (var.enabled ? 1 : 0)
-  )
-  alarm_name          = (var.cluster_mode_enabled
-    ? "${module.label.id}-000${floor(count.index / var.cluster_mode_replicas_per_node_group) + 1}-00${count.index % var.cluster_mode_replicas_per_node_group + 1}-freeable-memory"
-  : "${module.label.id}-cpu-utilization")
+  for_each = var.enabled ? local.nodes_list : []
+
+  alarm_name          = "${each.value}-freeable-memory"
   alarm_description   = "Redis cluster freeable memory"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
@@ -164,9 +160,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
   threshold = var.alarm_memory_threshold_bytes
 
   dimensions = {
-    CacheClusterId = (var.cluster_mode_enabled ?
-      "${module.label.id}-000${floor(count.index / var.cluster_mode_replicas_per_node_group)}-00${count.index % var.cluster_mode_replicas_per_node_group}"
-    : module.label.id)
+    CacheClusterId = each.value
   }
 
   alarm_actions = var.alarm_actions
