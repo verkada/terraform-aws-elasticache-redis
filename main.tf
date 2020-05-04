@@ -2,7 +2,7 @@ locals {
   elasticache_subnet_group_name = var.elasticache_subnet_group_name != "" ? var.elasticache_subnet_group_name : join("", aws_elasticache_subnet_group.default.*.name)
   nodes_list = var.cluster_mode_enabled ? flatten([
     for i in range(var.cluster_mode_num_node_groups) : [
-      for k in range(var.cluster_mode_replicas_per_node_group) :
+      for j in range(var.cluster_mode_replicas_per_node_group) :
       "${module.label.id}-000${i + 1}-00${j + 1}"
     ]
   ]) : [module.label.id]
