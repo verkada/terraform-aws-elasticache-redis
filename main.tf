@@ -123,7 +123,7 @@ resource "aws_elasticache_replication_group" "default" {
 # CloudWatch Resources
 #
 resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
-  for_each = var.enabled ? local.nodes_list : []
+  for_each = var.enabled ? toset(local.nodes_list) : []
 
   alarm_name          = "${each.value}-cpu-utilization"
   alarm_description   = "Redis cluster CPU utilization"
@@ -146,7 +146,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
-  for_each = var.enabled ? local.nodes_list : []
+  for_each = var.enabled ? toset(local.nodes_list) : []
 
   alarm_name          = "${each.value}-freeable-memory"
   alarm_description   = "Redis cluster freeable memory"
