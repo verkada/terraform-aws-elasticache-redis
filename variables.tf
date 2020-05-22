@@ -150,6 +150,12 @@ variable "ok_actions" {
   default     = []
 }
 
+variable "insufficient_data_actions" {
+  description = "List of actions to trigger when the alarm does not have sufficient data."
+  type        = list(string)
+  default     = []
+}
+
 variable "apply_immediately" {
   type        = bool
   default     = true
@@ -238,4 +244,16 @@ variable "cluster_mode_num_node_groups" {
   type        = number
   description = "Number of node groups (shards) for this Redis replication group. Changing this number will trigger an online resizing operation before other settings modifications"
   default     = 0
+}
+
+variable "use_existing_parameter_group" {
+  type        = bool
+  description = "If true, will use the parameter group in elasticache_parameter_group_name."
+  default     = false
+}
+
+variable "elasticache_parameter_group_name" {
+  type        = string
+  description = "Existing parameter group for Elasticache instance."
+  default     = null
 }
