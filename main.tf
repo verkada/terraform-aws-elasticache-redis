@@ -3,7 +3,7 @@ locals {
   elasticache_parameter_group_name = var.use_existing_parameter_group ? var.elasticache_parameter_group_name : join("", aws_elasticache_parameter_group.default.*.name)
   nodes_list = var.cluster_mode_enabled ? flatten([
     for i in range(var.cluster_mode_num_node_groups) : [
-      for j in range(var.cluster_mode_replicas_per_node_group) :
+      for j in range(var.cluster_mode_replicas_per_node_group + 1) :
       "${module.label.id}-000${i + 1}-00${j + 1}"
     ]
   ]) : [module.label.id]
