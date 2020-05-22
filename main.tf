@@ -1,5 +1,5 @@
 locals {
-  elasticache_subnet_group_name = var.elasticache_subnet_group_name != "" ? var.elasticache_subnet_group_name : join("", aws_elasticache_subnet_group.default.*.name),
+  elasticache_subnet_group_name    = var.elasticache_subnet_group_name != "" ? var.elasticache_subnet_group_name : join("", aws_elasticache_subnet_group.default.*.name)
   elasticache_parameter_group_name = var.use_existing_parameter_group ? var.elasticache_parameter_group_name : join("", aws_elasticache_parameter_group.default.*.name)
   nodes_list = var.cluster_mode_enabled ? flatten([
     for i in range(var.cluster_mode_num_node_groups) : [
@@ -141,10 +141,10 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
     CacheClusterId = each.value
   }
 
-  alarm_actions = var.alarm_actions
-  ok_actions    = var.ok_actions
+  alarm_actions             = var.alarm_actions
+  ok_actions                = var.ok_actions
   insufficient_data_actions = var.insufficient_data_actions
-  depends_on    = [aws_elasticache_replication_group.default]
+  depends_on                = [aws_elasticache_replication_group.default]
 }
 
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
@@ -165,10 +165,10 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
     CacheClusterId = each.value
   }
 
-  alarm_actions = var.alarm_actions
-  ok_actions    = var.ok_actions
+  alarm_actions             = var.alarm_actions
+  ok_actions                = var.ok_actions
   insufficient_data_actions = var.insufficient_data_actions
-  depends_on    = [aws_elasticache_replication_group.default]
+  depends_on                = [aws_elasticache_replication_group.default]
 }
 
 module "dns" {
