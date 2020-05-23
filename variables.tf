@@ -216,6 +216,12 @@ variable "replication_group_id" {
   default     = ""
 }
 
+variable "replication_group_description" {
+  type        = string
+  description = "A user-created description for the replication group"
+  default     = ""
+}
+
 variable "snapshot_window" {
   type        = string
   description = "The daily time range (in UTC) during which ElastiCache will begin taking a daily snapshot of your cache cluster."
