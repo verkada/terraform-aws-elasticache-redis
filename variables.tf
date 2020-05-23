@@ -216,6 +216,13 @@ variable "replication_group_id" {
   default     = ""
 }
 
+variable "replication_group_description" {
+  type        = string
+  description = "Replication group ID with the following constraints: \nA name must contain from 1 to 20 alphanumeric characters or hyphens. \n The first character must be a letter. \n A name cannot end with a hyphen or contain two consecutive hyphens."
+  default     = ""
+}
+
+
 variable "snapshot_window" {
   type        = string
   description = "The daily time range (in UTC) during which ElastiCache will begin taking a daily snapshot of your cache cluster."
