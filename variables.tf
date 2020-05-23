@@ -218,10 +218,9 @@ variable "replication_group_id" {
 
 variable "replication_group_description" {
   type        = string
-  description = "Replication group ID with the following constraints: \nA name must contain from 1 to 20 alphanumeric characters or hyphens. \n The first character must be a letter. \n A name cannot end with a hyphen or contain two consecutive hyphens."
+  description = "A user-created description for the replication group"
   default     = ""
 }
-
 
 variable "snapshot_window" {
   type        = string
