@@ -134,6 +134,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
   namespace           = "AWS/ElastiCache"
   period              = "300"
   statistic           = "Average"
+  tags                = module.label.tags
 
   threshold = var.alarm_cpu_threshold_percent
 
@@ -158,6 +159,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
   namespace           = "AWS/ElastiCache"
   period              = "60"
   statistic           = "Average"
+  tags                = module.label.tags
 
   threshold = var.alarm_memory_threshold_bytes
 
