@@ -263,3 +263,9 @@ variable "elasticache_parameter_group_name" {
   description = "Existing parameter group for Elasticache instance."
   default     = null
 }
+
+variable "multi_az_enabled" {
+  type        = bool
+  description = "Specifies whether to enable multi-az"
+  default     = true
+}

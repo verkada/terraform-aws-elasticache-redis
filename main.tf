@@ -107,6 +107,7 @@ resource "aws_elasticache_replication_group" "default" {
   snapshot_window               = var.snapshot_window
   snapshot_retention_limit      = var.snapshot_retention_limit
   apply_immediately             = var.apply_immediately
+  multi_az_enabled              = var.multi_az_enabled
 
   tags = module.label.tags
 
