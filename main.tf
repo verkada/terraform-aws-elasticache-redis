@@ -175,7 +175,9 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
 }
 
 module "dns" {
-  source  = "git::https://github.com/cloudposse/terraform-aws-route53-cluster-hostname.git?ref=tags/0.7.0"
+  source  = "cloudposse/route53-cluster-hostname/aws"
+  version = "0.12.0"
+
   enabled = var.enabled && var.zone_id != "" ? true : false
   name    = var.dns_subdomain != "" ? var.dns_subdomain : var.name
   ttl     = 60
