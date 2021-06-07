@@ -73,7 +73,7 @@ resource "aws_elasticache_parameter_group" "default" {
   count  = var.enabled && !var.use_existing_parameter_group ? 1 : 0
   name   = module.label.id
   family = var.family
-  tags   = module.label.tags
+
 
 
   dynamic "parameter" {
