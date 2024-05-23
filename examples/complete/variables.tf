@@ -8,21 +8,6 @@ variable "availability_zones" {
   description = "Availability zone IDs"
 }
 
-variable "namespace" {
-  type        = string
-  description = "Namespace (e.g. `eg` or `cp`)"
-}
-
-variable "stage" {
-  type        = string
-  description = "Stage (e.g. `prod`, `dev`, `staging`)"
-}
-
-variable "name" {
-  type        = string
-  description = "Name  (e.g. `app` or `cluster`)"
-}
-
 variable "cluster_size" {
   type        = number
   description = "Number of nodes in cluster"
@@ -53,7 +38,13 @@ variable "transit_encryption_enabled" {
   description = "Enable TLS"
 }
 
-variable "zone_id" {
+variable "cloudwatch_metric_alarms_enabled" {
+  type        = bool
+  description = "Boolean flag to enable/disable CloudWatch metrics alarms"
+}
+
+variable "sg_name" {
   type        = string
-  description = "Route53 DNS Zone ID"
+  default     = ""
+  description = "Name to give to created security group"
 }
