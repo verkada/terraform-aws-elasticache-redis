@@ -57,7 +57,13 @@ variable "parameter" {
 variable "engine_version" {
   type        = string
   default     = "4.0.10"
-  description = "Redis engine version"
+  description = "Redis/Valkey engine version"
+}
+
+variable "engine" {
+  type        = string
+  default     = "redis"
+  description = "Redis or Valkey as a version"
 }
 
 variable "at_rest_encryption_enabled" {

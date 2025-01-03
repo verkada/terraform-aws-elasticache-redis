@@ -174,6 +174,7 @@ resource "aws_elasticache_replication_group" "default" {
   maintenance_window         = var.maintenance_window
   notification_topic_arn     = var.notification_topic_arn
   engine_version             = var.engine_version
+  engine                     = var.engine
   at_rest_encryption_enabled = var.at_rest_encryption_enabled
   transit_encryption_enabled = var.transit_encryption_enabled
   kms_key_id                 = var.at_rest_encryption_enabled ? var.kms_key_id : null
