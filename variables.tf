@@ -278,3 +278,14 @@ variable "insufficient_data_actions" {
   type        = list(string)
   default     = []
 }
+
+variable "auth_token_update_strategy" {
+  description = "Strategy to use when updating the auth_token. Valid values: SET, ROTATE, DELETE."
+  type        = string
+  default     = "ROTATE"
+
+  validation {
+    condition     = contains(["SET", "ROTATE", "DELETE"], var.auth_token_update_strategy)
+    error_message = "auth_token_update_strategy must be one of SET, ROTATE, or DELETE if auth_token is set."
+  }
+}
