@@ -6,6 +6,8 @@ locals {
       "${module.label.id}-000${i + 1}-00${j + 1}"
     ]
   ]) : [module.label.id]
+
+  auth_token_update_strategy = var.auth_token_update_strategy != null ? var.auth_token_update_strategy : var.auth_token != null ? "ROTATE" : null
 }
 
 module "label" {
@@ -186,7 +188,7 @@ resource "aws_elasticache_replication_group" "default" {
   apply_immediately          = var.apply_immediately
   data_tiering_enabled       = var.data_tiering_enabled
   auto_minor_version_upgrade = var.auto_minor_version_upgrade
-  auth_token_update_strategy = var.auth_token_update_strategy
+  auth_token_update_strategy = local.auth_token_update_strategy
 
   dynamic "log_delivery_configuration" {
     for_each = var.log_delivery_configuration
